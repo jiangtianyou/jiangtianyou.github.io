@@ -2,7 +2,7 @@
 menu:
   Home: /
   Archives: /archives
-rss: /atom.xml
+# rss: /atom.xml
 
 # Content
 excerpt_link: Read More
@@ -13,7 +13,7 @@ sidebar: right
 widgets:
 - category
 - tag
-- tagcloud
+# - tagcloud
 - archive
 - recent_posts
 
