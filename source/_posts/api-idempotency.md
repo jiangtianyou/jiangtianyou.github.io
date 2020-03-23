@@ -20,6 +20,6 @@ title: 如何保证接口幂等性
 ![](https://cdn.jsdelivr.net/gh/jiangtianyou/ImageBase/2019/token_solution.png)
 这也就是防止重复提交的策略。有的地方也叫guid，原理都是一样。
 
-### 3. 
+
 
 
