@@ -1,40 +1,25 @@
 ---
-title: 这是一个中文title
+title: 如何保证接口幂等性
 ---
-Welcome to [Hexo](https://hexo.io/)! This is your very first post. Check [documentation](https://hexo.io/docs/) for more info. If you get any problems when using Hexo, you can find the answer in [troubleshooting](https://hexo.io/docs/troubleshooting.html) or you can ask me on [GitHub](https://github.com/hexojs/hexo/issues).
+在平时的接口开发中，经常会遇到，某些接口需要严格的满足幂等性。本文对接口幂等性相关的知识点进行梳理。
 
 <!--more-->
 
-## 这是一个quickstart
+## 何为幂等性
 
-### Create a new post
+幂等性是指重复调用与一次调用产生的效果相同。这样的接口一般假定，外部调用会失败，可能会进行重试。
 
-``` bash
-$ hexo new "My New Post"
-```
+## 保证幂等性的原理
+首先要分析业务本身是否幂等。例如，对id=1的a字段设置为0，这个操作就是天然幂等的，同样如果对a字段加1操作，这就不是幂等的。我们主要通过流程设计，来让本身不幂等的操作，满足幂等性。
 
-More info: [Writing](https://hexo.io/docs/writing.html)
+## 保证幂等性的常用手段
+### 1. 调整业务实现方式
+例如. 用户点赞稿件，将稿件的点赞量+1, 改为每个用户每票稿件只有一条点赞记录。然后点赞量从点赞记录里统计而来。一般来说，此方式从技术复杂度角度来看代价较小。
 
-### Run server
+### 2. token机制
+![](https://cdn.jsdelivr.net/gh/jiangtianyou/ImageBase/2019/token_solution.png)
+这也就是防止重复提交的策略。有的地方也叫guid，原理都是一样。
 
-``` bash
-$ hexo server
-```
+### 3. 
 
-More info: [Server](https://hexo.io/docs/server.html)
 
-### Generate static files
-
-``` bash
-$ hexo generate
-```
-
-More info: [Generating](https://hexo.io/docs/generating.html)
-
-### Deploy to remote sites
-
-``` bash
-$ hexo deploy
-```
-
-More info: [Deployment](https://hexo.io/docs/one-command-deployment.html)
