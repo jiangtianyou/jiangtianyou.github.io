@@ -5,21 +5,21 @@
   
 
   
-  <title>这是一个中文title | Tianyou Jiang</title>
+  <title>如何保证接口幂等性 | Tianyou Jiang</title>
   <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
-  <meta name="description" content="Welcome to Hexo! This is your very first post. Check documentation for more info. If you get any problems when using Hexo, you can find the answer in troubleshooting or you can ask me on GitHub.">
+  <meta name="description" content="在平时的接口开发中，经常会遇到，某些接口需要严格的满足幂等性。本文对接口幂等性相关的知识点进行梳理。">
 <meta property="og:type" content="article">
-<meta property="og:title" content="这是一个中文title">
+<meta property="og:title" content="如何保证接口幂等性">
 <meta property="og:url" content="http://jiangtianyou.github.io/2020/03/12/hello-world/index.html">
 <meta property="og:site_name" content="Tianyou Jiang">
-<meta property="og:description" content="Welcome to Hexo! This is your very first post. Check documentation for more info. If you get any problems when using Hexo, you can find the answer in troubleshooting or you can ask me on GitHub.">
+<meta property="og:description" content="在平时的接口开发中，经常会遇到，某些接口需要严格的满足幂等性。本文对接口幂等性相关的知识点进行梳理。">
 <meta property="og:locale" content="zh">
+<meta property="og:image" content="https://cdn.jsdelivr.net/gh/jiangtianyou/ImageBase/2019/token_solution.png">
 <meta property="article:published_time" content="2020-03-12T03:05:19.696Z">
-<meta property="article:modified_time" content="2020-03-12T06:28:48.661Z">
+<meta property="article:modified_time" content="2020-03-23T09:42:15.859Z">
 <meta property="article:author" content="Tianyou Jiang">
 <meta name="twitter:card" content="summary">
-  
-    <link rel="alternate" href="/atom.xml" title="Tianyou Jiang" type="application/atom+xml">
+<meta name="twitter:image" content="https://cdn.jsdelivr.net/gh/jiangtianyou/ImageBase/2019/token_solution.png">
   
   
     <link rel="icon" href="/favicon.png">
@@ -55,8 +55,6 @@
       </nav>
       <nav id="sub-nav">
         
-          <a id="nav-rss-link" class="nav-icon" href="/atom.xml" title="RSS Feed"></a>
-        
         <a id="nav-search-btn" class="nav-icon" title="Search"></a>
       </nav>
       <div id="search-form-wrap">
@@ -80,7 +78,7 @@
         
   
     <h1 class="article-title" itemprop="name">
-      这是一个中文title
+      如何保证接口幂等性
     </h1>
   
 
@@ -88,22 +86,14 @@
     
     <div class="article-entry" itemprop="articleBody">
       
-        <p>Welcome to <a href="https://hexo.io/" target="_blank" rel="noopener">Hexo</a>! This is your very first post. Check <a href="https://hexo.io/docs/" target="_blank" rel="noopener">documentation</a> for more info. If you get any problems when using Hexo, you can find the answer in <a href="https://hexo.io/docs/troubleshooting.html" target="_blank" rel="noopener">troubleshooting</a> or you can ask me on <a href="https://github.com/hexojs/hexo/issues" target="_blank" rel="noopener">GitHub</a>.</p>
+        <p>在平时的接口开发中，经常会遇到，某些接口需要严格的满足幂等性。本文对接口幂等性相关的知识点进行梳理。</p>
 <a id="more"></a>
 
-<h2 id="这是一个quickstart"><a href="#这是一个quickstart" class="headerlink" title="这是一个quickstart"></a>这是一个quickstart</h2><h3 id="Create-a-new-post"><a href="#Create-a-new-post" class="headerlink" title="Create a new post"></a>Create a new post</h3><figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">$ hexo new <span class="string">"My New Post"</span></span><br></pre></td></tr></table></figure>
-
-<p>More info: <a href="https://hexo.io/docs/writing.html" target="_blank" rel="noopener">Writing</a></p>
-<h3 id="Run-server"><a href="#Run-server" class="headerlink" title="Run server"></a>Run server</h3><figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">$ hexo server</span><br></pre></td></tr></table></figure>
-
-<p>More info: <a href="https://hexo.io/docs/server.html" target="_blank" rel="noopener">Server</a></p>
-<h3 id="Generate-static-files"><a href="#Generate-static-files" class="headerlink" title="Generate static files"></a>Generate static files</h3><figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">$ hexo generate</span><br></pre></td></tr></table></figure>
-
-<p>More info: <a href="https://hexo.io/docs/generating.html" target="_blank" rel="noopener">Generating</a></p>
-<h3 id="Deploy-to-remote-sites"><a href="#Deploy-to-remote-sites" class="headerlink" title="Deploy to remote sites"></a>Deploy to remote sites</h3><figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">$ hexo deploy</span><br></pre></td></tr></table></figure>
-
-<p>More info: <a href="https://hexo.io/docs/one-command-deployment.html" target="_blank" rel="noopener">Deployment</a></p>
-
+<h2 id="何为幂等性"><a href="#何为幂等性" class="headerlink" title="何为幂等性"></a>何为幂等性</h2><p>幂等性是指重复调用与一次调用产生的效果相同。这样的接口一般假定，外部调用会失败，可能会进行重试。</p>
+<h2 id="保证幂等性的原理"><a href="#保证幂等性的原理" class="headerlink" title="保证幂等性的原理"></a>保证幂等性的原理</h2><p>首先要分析业务本身是否幂等。例如，对id=1的a字段设置为0，这个操作就是天然幂等的，同样如果对a字段加1操作，这就不是幂等的。我们主要通过流程设计，来让本身不幂等的操作，满足幂等性。</p>
+<h2 id="保证幂等性的常用手段"><a href="#保证幂等性的常用手段" class="headerlink" title="保证幂等性的常用手段"></a>保证幂等性的常用手段</h2><h3 id="1-调整业务实现方式"><a href="#1-调整业务实现方式" class="headerlink" title="1. 调整业务实现方式"></a>1. 调整业务实现方式</h3><p>例如. 用户点赞稿件，将稿件的点赞量+1, 改为每个用户每票稿件只有一条点赞记录。然后点赞量从点赞记录里统计而来。一般来说，此方式从技术复杂度角度来看代价较小。</p>
+<h3 id="2-token机制"><a href="#2-token机制" class="headerlink" title="2. token机制"></a>2. token机制</h3><p><img src="https://cdn.jsdelivr.net/gh/jiangtianyou/ImageBase/2019/token_solution.png" alt=""><br>这也就是防止重复提交的策略。有的地方也叫guid，原理都是一样。</p>
+<h3 id="3"><a href="#3" class="headerlink" title="3."></a>3.</h3>
       
     </div>
     <footer class="article-footer">
@@ -128,8 +118,6 @@
 
   
     
-  
-    
   <div class="widget-wrap">
     <h3 class="widget-title">Archives</h3>
     <div class="widget">
@@ -146,7 +134,7 @@
       <ul>
         
           <li>
-            <a href="/2020/03/12/hello-world/">这是一个中文title</a>
+            <a href="/2020/03/12/hello-world/">如何保证接口幂等性</a>
           </li>
         
       </ul>
